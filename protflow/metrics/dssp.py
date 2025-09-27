@@ -168,23 +168,23 @@ class DSSP(Runner):
         return output
 
     def add_HEADER(self, pose_path: str, output_dir: str) -> str:
-    """
-    Ensure that a PDB file contains a HEADER and CRYST1 record.
-    If either is missing, insert minimal dummy entries.
+        """
+        Ensure that a PDB file contains a HEADER and CRYST1 record.
+        If either is missing, insert minimal dummy entries.
 
-    Parameters
-    ----------
-    pose_path : str
-        Path to the input pose file (.pdb or .cif).
-    output_dir : str
-        Directory for the modified output file.
+        Parameters
+        ----------
+        pose_path : str
+            Path to the input pose file (.pdb or .cif).
+        output_dir : str
+            Directory for the modified output file.
 
-    Returns
-    -------
-    str
-        Path to the output PDB file (original if unchanged).
-    """
-    # Skip CIF files entirely
+        Returns
+        -------
+        str
+            Path to the output PDB file (original if unchanged).
+        """
+        # Skip CIF files entirely
         if pose_path.endswith(".cif"):
             return pose_path
         elif not pose_path.endswith(".pdb"):
