@@ -185,62 +185,61 @@ class DSSP(Runner):
         Path to the output PDB file (original if unchanged).
     """
     # Skip CIF files entirely
-    if pose_path.endswith(".cif"):
-        return pose_path
-    elif not pose_path.endswith(".pdb"):
-        raise RuntimeError(
-            f"Input must be .pdb or .cif file, but got {os.path.splitext(pose_path)[1]}!"
-        )
+        if pose_path.endswith(".cif"):
+            return pose_path
+        elif not pose_path.endswith(".pdb"):
+            raise RuntimeError(
+                f"Input must be .pdb or .cif file, but got {os.path.splitext(pose_path)[1]}!"
+            )
 
-    with open(pose_path, "r", encoding="utf-8") as f:
-        lines = f.readlines()
+        with open(pose_path, "r", encoding="utf-8") as f:
+            lines = f.readlines()
 
     # Check for HEADER / CRYST1 presence
-    has_header = any(line.startswith("HEADER") for line in lines)
-    has_cryst1 = any(line.startswith("CRYST1") for line in lines)
+        has_header = any(line.startswith("HEADER") for line in lines)
+        has_cryst1 = any(line.startswith("CRYST1") for line in lines)
 
     # If both exist, nothing to do
-    if has_header and has_cryst1:
-        return pose_path
+        if has_header and has_cryst1:
+            return pose_path
 
     # Prepare minimal dummy records
-    header_line = "HEADER    DUMMY STRUCTURE                            01-JAN-00   DUM000\n"
-    cryst1_line = (
-        "CRYST1    1.000    1.000    1.000  90.00  90.00  90.00 P 1           1\n"
-    )
+        header_line = "HEADER    DUMMY STRUCTURE                            01-JAN-00   DUM000\n"
+        cryst1_line = "CRYST1    1.000    1.000    1.000  90.00  90.00  90.00 P 1           1\n"
+        
 
     # Build new content
-    new_lines = []
-    inserted_header = False
-    inserted_cryst1 = False
+        new_lines = []
+        inserted_header = False
+        inserted_cryst1 = False
 
-    for i, line in enumerate(lines):
+        for i, line in enumerate(lines):
         # Insert HEADER at the very top if missing
-        if i == 0 and not has_header:
-            new_lines.append(header_line)
-            inserted_header = True
+            if i == 0 and not has_header:
+                new_lines.append(header_line)
+                inserted_header = True
 
         # Insert CRYST1 immediately after HEADER if missing
-        if not has_cryst1:
+            if not has_cryst1:
             # If current line is the first ATOM/HETATM and we haven’t added CRYST1 yet
-            if line.startswith(("ATOM", "HETATM")) and not inserted_cryst1:
-                if not inserted_header and not has_header:
+                if line.startswith(("ATOM", "HETATM")) and not inserted_cryst1:
+                    if not inserted_header and not has_header:
                     # ensure header precedes cryst if both were missing
-                    new_lines.append(header_line)
-                    inserted_header = True
-                new_lines.append(cryst1_line)
-                inserted_cryst1 = True
+                        new_lines.append(header_line)
+                        inserted_header = True
+                    new_lines.append(cryst1_line)
+                    inserted_cryst1 = True
 
-        new_lines.append(line)
+            new_lines.append(line)
 
     # Write to new location
-    input_dir = os.path.join(output_dir, "input_pdbs")
-    os.makedirs(input_dir, exist_ok=True)
-    new_path = os.path.join(input_dir, os.path.basename(pose_path))
-    with open(new_path, "w", encoding="utf-8") as f:
-        f.writelines(new_lines)
+        input_dir = os.path.join(output_dir, "input_pdbs")
+        os.makedirs(input_dir, exist_ok=True)
+        new_path = os.path.join(input_dir, os.path.basename(pose_path))
+        with open(new_path, "w", encoding="utf-8") as f:
+            f.writelines(new_lines)
 
-    return new_path
+        return new_path
 
 
     def write_cmd(self, pose_path: str, output_dir: str) -> str:
