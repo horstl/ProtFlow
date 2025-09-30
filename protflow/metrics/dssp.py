@@ -204,7 +204,7 @@ class DSSP(Runner):
             return pose_path
 
     # Prepare minimal dummy records
-        header_line = "HEADER    DUMMY STRUCTURE                            01-JAN-00   DUM000\n"
+        header_line = "HEADER    DUMMYSTRUCTURE                          01-JAN-01   1111              0\n"
         cryst1_line = "CRYST1    1.000    1.000    1.000  90.00  90.00  90.00 P 1           1\n"
         
 
